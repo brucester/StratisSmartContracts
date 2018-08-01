@@ -1,21 +1,12 @@
+//Very simple smart contract that takes a payment throught the Payable method and splits it evenly between 3 employee addresses. 
+//One of the addresses you set via parameter in the constructor. The other two are hard coded. 
+
 using Stratis.SmartContracts; 
 
 public class simplePayroll1 : SmartContract
 {
     
-    public ulong PayDayBlock // incase we want to add a delay to the payout
-    {
-        get
-        {
-            return PersistentState.GetUInt64("EndBlock");
-        }
-        set
-        {
-            PersistentState.SetUInt64("EndBlock", value);
-        }
-    }
-
-    public Address Employee1
+   public Address Employee1
     {
         get
         {
