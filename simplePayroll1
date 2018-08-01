@@ -1,4 +1,4 @@
-using Stratis.SmartContracts;
+using Stratis.SmartContracts; 
 
 public class simplePayroll1 : SmartContract
 {
