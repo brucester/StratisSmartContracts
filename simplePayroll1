@@ -1,0 +1,104 @@
+using Stratis.SmartContracts;
+
+public class simplePayroll1 : SmartContract
+{
+    
+    public ulong PayDayBlock // incase we want to add a delay to the payout
+    {
+        get
+        {
+            return PersistentState.GetUInt64("EndBlock");
+        }
+        set
+        {
+            PersistentState.SetUInt64("EndBlock", value);
+        }
+    }
+
+    public Address Employee1
+    {
+        get
+        {
+            return PersistentState.GetAddress("Employee1");
+        }
+        set
+        {
+            PersistentState.SetAddress("Employee1", value);
+        }
+    }
+
+    public Address Employee2
+    {
+        get
+        {
+            return PersistentState.GetAddress("Employee2");
+        }
+        set
+        {
+            PersistentState.SetAddress("Employee2", value);
+        }
+    }
+
+    public Address Employee3
+    {
+        get
+        {
+            return PersistentState.GetAddress("Employee3");
+        }
+        set
+        {
+            PersistentState.SetAddress("Employee3", value);
+        }
+    }
+
+    public ulong PayOut
+    {
+        get
+        {
+            return PersistentState.GetUInt64("PayOut");
+        }
+        set
+        {
+            PersistentState.SetUInt64("PayOut", value);
+        }
+    }
+
+
+    //Next phase we'll implement mapping aka a dictionary
+    //public ISmartContractMapping<ulong> PayDue
+    //{
+    //    get
+    //    {
+    //        return PersistentState.GetUInt64Mapping("PayDue");
+    //    }
+    //}
+
+    public simplePayroll1(ISmartContractState smartContractState, Address emp1)
+    : base(smartContractState)
+    {
+        Employee1 = emp1;
+        //Employee1 = (Address)"mv2iQhrELDtXmx2ztjpm7Lr5wz7MuuDFug";
+        Employee2 = (Address)"mpgKdAh2GeRrcfimv6g3FYewRCNGsCBgGe";
+        Employee3 = (Address)"mt2p4p5ctSj9gDNKKmTCjer6dt5EddtUqF";
+        //Payable();
+        //Withdraw();
+
+    }
+
+    public void Payable()
+    {
+        PayOut = Message.Value;
+        Withdraw();
+    }
+
+    public bool Withdraw()
+    {
+        ITransferResult transferResult1 = TransferFunds(Employee1, PayOut / 3);
+        ITransferResult transferResult2 = TransferFunds(Employee2, PayOut / 3);
+        ITransferResult transferResult3 = TransferFunds(Employee3, PayOut / 3);
+
+        return true;
+    }
+
+
+}
