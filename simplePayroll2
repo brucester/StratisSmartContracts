@@ -1,0 +1,112 @@
+//In this example I implement Mapping (similar to dictionaries)
+//Also add some loops to add employees and make payouts.
+//In the next one, I will use list, add a RemoveEmployee method, checks for the owner to do these things. 
+using Stratis.SmartContracts;
+
+public class simplePayroll1 : SmartContract
+{
+
+    public Address Owner
+    {
+        get
+        {
+            return PersistentState.GetAddress("Owner");
+        }
+        set
+        {
+            PersistentState.SetAddress("Owner", value);
+        }
+    }
+
+    public ISmartContractMapping<Address> AllEmployees
+    {
+        get
+        {
+            return PersistentState.GetAddressMapping("AllEmployees");
+        }
+    }
+
+    public ulong NumberOfEmployees
+    {
+        get
+        {
+            return PersistentState.GetUInt64("NumberOfEmployees");
+        }
+        set
+        {
+            PersistentState.SetUInt64("NumberOfEmployees", value);
+        }
+    }
+
+    public ulong PayOut
+    {
+        get
+        {
+            return PersistentState.GetUInt64("PayOut");
+        }
+        set
+        {
+            PersistentState.SetUInt64("PayOut", value);
+        }
+    }
+
+    public ISmartContractMapping<ulong> PayDue
+    {
+        get
+        {
+            return PersistentState.GetUInt64Mapping("PayDue");
+        }
+    }
+
+
+    public simplePayroll1(ISmartContractState smartContractState)
+    : base(smartContractState)
+    {
+        // Sets the owner of the smart contract as the sender of this message.
+        Owner = Message.Sender;
+        NumberOfEmployees = 0;
+        //Canot create a mapping/dictionary in the constructor. Make addEmployee Method
+        //AllEmployees["1"] = empToAdd;
+        //AllEmployees["2"] = (Address)"mpgKdAh2GeRrcfimv6g3FYewRCNGsCBgGe";
+        //AllEmployees["3"] = (Address)"mt2p4p5ctSj9gDNKKmTCjer6dt5EddtUqF";
+    }
+
+    public string addEmployee(Address empToAdd)
+    {
+        //ulong x = NumberOfEmployees;
+        //AllEmployees[x.ToString()] = empToAdd;
+        //Do it in one step. 
+        NumberOfEmployees++;
+        AllEmployees[NumberOfEmployees.ToString()] = empToAdd;
+        
+
+        return "Number of Employees: " + (NumberOfEmployees).ToString();
+        
+    }
+
+    public void Payable()
+    {
+        PayOut = Message.Value;
+        //int numbOfEmps = (int)NumberOfEmployees;
+        for ( ulong x = 1; x <= NumberOfEmployees; x++)
+        {
+            PayDue[x.ToString()] = PayOut/NumberOfEmployees;
+        }
+        Withdraw();       
+    }
+
+    public string Withdraw()
+    {
+        //ITransferResult transferResult1 = TransferFunds(AllEmployees["1"], PayDue[AllEmployees["1"]]);
+        //ITransferResult transferResult2 = TransferFunds(AllEmployees["2"], PayDue[AllEmployees["2"]]);
+        //ITransferResult transferResult3 = TransferFunds(AllEmployees["3"], PayDue[AllEmployees["3"]]);
+        //Use a loop to go through our Dictionary /mapping 
+        for (ulong x = 1; x <= NumberOfEmployees; x++)
+        {
+            TransferFunds(AllEmployees[x.ToString()], PayDue[x.ToString()]);
+        }
+        return "Each Employee gets "+PayOut/NumberOfEmployees+" tokens";
+    }
+ 
+
+}
